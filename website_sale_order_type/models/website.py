@@ -9,12 +9,14 @@ class Website(models.Model):
 
     @api.model
     def sale_get_payment_term(self, partner):
-        if partner.sale_type.payment_term_id:
-            return partner.sale_type.payment_term_id.id
+        sale_type = getattr(partner, "sale_type", False)
+        if sale_type and sale_type.payment_term_id:
+            return sale_type.payment_term_id.id
         return super().sale_get_payment_term(partner)
 
     def _get_current_pricelist(self):
         partner_sudo = self.env.user.partner_id
-        if partner_sudo.sale_type.pricelist_id:
-            return partner_sudo.sale_type.pricelist_id.id
+        sale_type = getattr(partner_sudo, "sale_type", False)
+        if sale_type and sale_type.pricelist_id:
+            return sale_type.pricelist_id.id
         return super()._get_current_pricelist()
